@@ -7,7 +7,7 @@
     <parent>
         <groupId>fr.elias</groupId>
         <artifactId>CustomiZer-parent</artifactId>
-        <version>BETA-2.0</version>
+        <version>BETA-2.1</version>
     </parent>
 
     <artifactId>customizer-api</artifactId>
