@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Fired just before a pack item's built {@link ItemStack} is added to a
- * player's inventory via the {@code /zitems} GUI or
+ * player's inventory via
  * {@link fr.elias.customiZer.api.CustomiZerAPI#givePackItem}.
  *
  * <p>Cancelling prevents the item from being given.
@@ -39,7 +39,9 @@ public class PackItemGiveEvent extends PlayerEvent implements Cancellable {
      * Can be replaced to change what is given.
      */
     @NotNull public ItemStack getItemStack() { return itemStack; }
-    public void setItemStack(@NotNull ItemStack itemStack) { this.itemStack = itemStack; }
+    public void setItemStack(@NotNull ItemStack itemStack) {
+        this.itemStack = java.util.Objects.requireNonNull(itemStack, "itemStack");
+    }
 
     @Override public boolean isCancelled() { return cancelled; }
     @Override public void setCancelled(boolean cancel) { this.cancelled = cancel; }

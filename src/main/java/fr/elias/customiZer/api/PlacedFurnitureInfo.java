@@ -22,4 +22,11 @@ public record PlacedFurnitureInfo(
         int modelData,
         /** The base block location where the furniture sits. */
         @NotNull Location baseLocation
-) {}
+) {
+    public PlacedFurnitureInfo {
+        baseLocation = java.util.Objects.requireNonNull(baseLocation, "baseLocation").clone();
+    }
+
+    /** Defensive copy: callers cannot mutate the snapshot's stored location. */
+    @Override public Location baseLocation() { return baseLocation.clone(); }
+}

@@ -50,7 +50,7 @@ public final class CustomStack {
 
     /**
      * Returns a clone of the backing {@link ItemStack}.
-     * Always clone before modifying (amount, meta, etc.).
+     * Safe to modify without affecting this wrapper.
      */
     @NotNull
     public ItemStack getItemStack() {

@@ -16,6 +16,10 @@ import java.util.UUID;
 /**
  * The CustomiZer developer API.
  *
+ * <p>Unless explicitly documented otherwise, call instance methods on the server
+ * thread. Builders do not grant items or bypass equipment/permission rules.
+ * Reacquire the API after plugin reload; do not retain instances across disable.
+ *
  * <p>Use this class to interact with CustomiZer from another plugin.
  * Obtain the singleton instance with {@link #get()} after CustomiZer
  * has been enabled.
@@ -44,15 +48,27 @@ import java.util.UUID;
  */
 public abstract class CustomiZerAPI {
 
-    private static CustomiZerAPI instance;
+    private static volatile CustomiZerAPI instance;
 
     /**
      * Registers the API implementation. Called internally by CustomiZer during {@code onEnable()}.
      * Not part of the public API.
      */
-    protected static void register(@NotNull CustomiZerAPI api) {
-        instance = api;
+    protected static synchronized void register(@NotNull CustomiZerAPI api) {
+        instance = java.util.Objects.requireNonNull(api, "api");
     }
+
+    /** Internal lifecycle cleanup; an old implementation cannot clear a newer one. */
+    protected static synchronized void unregister(@NotNull CustomiZerAPI api) {
+        if (instance == api) instance = null;
+    }
+
+    /** True only after initialization and before shutdown. */
+    public static boolean isAvailable() { return instance != null; }
+
+    /** Optional integration lookup; null while unavailable. Does not imply async safety. */
+    @Nullable
+    public static CustomiZerAPI getOrNull() { return instance; }
 
     /**
      * Returns the API instance.
@@ -61,15 +77,58 @@ public abstract class CustomiZerAPI {
      */
     @NotNull
     public static CustomiZerAPI get() {
-        if (instance == null) {
+        CustomiZerAPI current = instance;
+        if (current == null) {
             throw new IllegalStateException("CustomiZer has not been enabled yet.");
         }
-        return instance;
+        return current;
+    }
+
+    // Additive BETA-2.1 capabilities. Concrete defaults preserve existing subclasses;
+    // the current plugin implements every method below. Old implementations fail explicitly.
+
+    /** Loaded visual and functional pack IDs, including pack-local armor packs. */
+    @NotNull public Set<String> getPackNames() { throw unsupported(); }
+
+    /** Original YAML config keys, as distinct from legacy display-name lookup IDs. */
+    @NotNull public Set<String> getItemKeys() { throw unsupported(); }
+
+    /** Snapshot of all registered visual pack items (not just one category). */
+    @NotNull public List<PackItemInfo> getAllPackItems() { throw unsupported(); }
+
+    /** Build a visual pack item with its full modern model/equipment metadata. */
+    @Nullable public ItemStack buildPackItem(@NotNull String packName, @NotNull String itemId) { throw unsupported(); }
+
+    /** Modern model/equipment metadata, or null when the pack item does not exist. */
+    @Nullable public PackModelInfo getPackModelInfo(@NotNull String packName, @NotNull String itemId) { throw unsupported(); }
+
+    /** Loaded custom armor IDs, including definitions from packs/<pack>/armors.yml. */
+    @NotNull public Set<String> getArmorKeys() { throw unsupported(); }
+
+    /** Build through the armor handler (PAPER heads, CORE_SHADER and DISPLAY_3D included). */
+    @Nullable public ItemStack buildArmorItem(@NotNull String armorId) { throw unsupported(); }
+
+    /** Loaded cosmetic IDs, rather than visual pack model IDs. */
+    @NotNull public Set<String> getCosmeticKeys() { throw unsupported(); }
+
+    /** Builds a configured cosmetic; does not equip it or change permissions. */
+    @Nullable public ItemStack buildCosmeticItem(@NotNull String cosmeticId) { throw unsupported(); }
+
+    /** Functional /zitems catalog for this pack, not every handler's private registry. */
+    @NotNull public List<FunctionalItemInfo> getFunctionalItems(@NotNull String packName) { throw unsupported(); }
+
+    /** Resolve a catalog entry through the same item factory used by /zitems.
+     * Returns null when absent. Does not apply GUI-only name/lore overlays or give/equip it. */
+    @Nullable public ItemStack buildFunctionalItem(@NotNull String packName, @NotNull String type,
+                                                  @NotNull String itemId) { throw unsupported(); }
+
+    private static UnsupportedOperationException unsupported() {
+        return new UnsupportedOperationException("This API implementation lacks BETA-2.1 catalog support");
     }
 
     // ── Custom Items (items.yml) ─────────────────────────────────────────────
 
-    /** All keys registered in {@code items.yml}. */
+    /** Legacy display-name lookup IDs. Use getItemKeys() for original YAML keys. */
     @NotNull
     public abstract Set<String> getItemNames();
 
@@ -115,6 +174,30 @@ public abstract class CustomiZerAPI {
     @Nullable
     public abstract ItemStack buildBlockItem(@NotNull String blockKey);
 
+    /**
+     * Resolves a native, non-emissive custom block to a fresh BlockData, or null for
+     * an unknown key. Accepts a blocks.yml key, customizer:key, or pack:item.
+     * Call on the server thread after CustomiZer is ready; cache the result for
+     * ChunkData generation (use a clone per worker). Never reduce it to Material.
+     * DISPLAY/entity-backed and light-emitting blocks throw UnsupportedOperationException.
+     */
+    @Nullable
+    public org.bukkit.block.data.BlockData getBlockData(@NotNull String blockKey) {
+        throw new UnsupportedOperationException("Native block lookup is not supported by this implementation");
+    }
+
+    /**
+     * Places a native, non-emissive custom block in an already loaded chunk.
+     * Main thread only. Returns false for an unknown key or a protected target
+     * (tile entity, furniture, barrier, light or note block). Does not simulate
+     * player events, permissions, drops or region protection: callers must check them.
+     * Unsupported block representations throw UnsupportedOperationException.
+     * Use getBlockData and ChunkData.setBlock for terrain generation instead.
+     */
+    public boolean placeBlock(@NotNull Location location, @NotNull String blockKey) {
+        throw new UnsupportedOperationException("Block placement is not supported by this implementation");
+    }
+
     /** Gives the named custom block item to a player. No-op if key does not exist. */
     public abstract void giveBlockItem(@NotNull Player player, @NotNull String blockKey);
 
@@ -159,6 +242,7 @@ public abstract class CustomiZerAPI {
      * does nothing if the event is cancelled or the item is not found.
      *
      * @return {@code true} if the item was successfully given
+     * (inventory overflow is dropped at the player's location)
      */
     public abstract boolean givePackItem(@NotNull Player player,
                                          @NotNull String packName,
