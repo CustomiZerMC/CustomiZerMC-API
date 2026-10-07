@@ -24,12 +24,12 @@
 
     <distributionManagement>
         <repository>
-            <id>oreostudios-releases</id>
-            <url>https://maven.oreostudios.fr/releases</url>
+            <id>oreostudios-customizer</id>
+            <url>https://maven.oreostudios.fr/customizer</url>
         </repository>
         <snapshotRepository>
-            <id>oreostudios-snapshots</id>
-            <url>https://maven.oreostudios.fr/snapshots</url>
+            <id>oreostudios-customizer</id>
+            <url>https://maven.oreostudios.fr/customizer</url>
         </snapshotRepository>
     </distributionManagement>
 

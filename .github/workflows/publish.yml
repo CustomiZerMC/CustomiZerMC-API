@@ -15,13 +15,10 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
-          server-id: oreostudios-releases
+          server-id: oreostudios-customizer
           server-username: REPOSILITE_USERNAME
           server-password: REPOSILITE_PASSWORD
-      - name: Write snapshot server credentials
-        run: |
-          sed -i 's#</servers>#<server><id>oreostudios-snapshots</id><username>${env.REPOSILITE_USERNAME}</username><password>${env.REPOSILITE_PASSWORD}</password></server></servers>#' ~/.m2/settings.xml
-      - name: Deploy to maven.oreostudios.fr
+      - name: Deploy to maven.oreostudios.fr/customizer
         run: mvn -B deploy -DskipTests
         env:
           REPOSILITE_USERNAME: ${{ secrets.REPOSILITE_USERNAME }}
