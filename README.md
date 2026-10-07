@@ -1,5 +1,8 @@
 # CustomiZer API
 
+> [!NOTE]
+> The [CustomiZerMC-API](https://github.com/CustomiZerMC/CustomiZerMC-API) repository is a **read-only mirror**. It's synced automatically from `customizer-api/` in [CustomiZerMC-Plugin](https://github.com/CustomiZerMC/CustomiZerMC-Plugin), so make API changes there; direct edits here are overwritten.
+
 The developer API for **CustomiZer**, a Paper plugin for custom items, blocks, furniture, armor, cosmetics, glyphs and resource packs.
 
 Use it to read CustomiZer content from your own plugin, build and give CustomiZer items, and hook into CustomiZer's events.
