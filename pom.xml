@@ -4,15 +4,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>fr.elias</groupId>
-        <artifactId>CustomiZer-parent</artifactId>
-        <version>BETA-2.1</version>
-    </parent>
-
+    <groupId>fr.elias</groupId>
     <artifactId>customizer-api</artifactId>
+    <version>BETA-2.1</version>
     <packaging>jar</packaging>
     <name>CustomiZer-API</name>
+
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>papermc-repo</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+    </repositories>
 
     <build>
         <defaultGoal>clean package</defaultGoal>
