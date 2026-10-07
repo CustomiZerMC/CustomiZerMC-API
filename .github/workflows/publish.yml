@@ -1,0 +1,28 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+          server-id: oreostudios-releases
+          server-username: REPOSILITE_USERNAME
+          server-password: REPOSILITE_PASSWORD
+      - name: Write snapshot server credentials
+        run: |
+          sed -i 's#</servers>#<server><id>oreostudios-snapshots</id><username>${env.REPOSILITE_USERNAME}</username><password>${env.REPOSILITE_PASSWORD}</password></server></servers>#' ~/.m2/settings.xml
+      - name: Deploy to maven.oreostudios.fr
+        run: mvn -B deploy -DskipTests
+        env:
+          REPOSILITE_USERNAME: ${{ secrets.REPOSILITE_USERNAME }}
+          REPOSILITE_PASSWORD: ${{ secrets.REPOSILITE_PASSWORD }}
