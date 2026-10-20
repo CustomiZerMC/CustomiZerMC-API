@@ -204,6 +204,22 @@ int prestige = api.getPrestigeLevel(id);
 boolean done = api.isMissionCompleted(id, "first_diamond");
 ```
 
+### ShaderGUI (full-screen shader GUIs and HUDs)
+
+```java
+ShaderGui gui = api.shaderGui();
+gui.open(player, "world_map");               // false if unknown, no permission or cancelled
+gui.setValue(player, "mana", 42);            // {mana} in HUD text and bars
+gui.showHud(player, "rpg");
+gui.notify(player, "Quest updated", 60);     // HUD notification for 60 ticks
+gui.registerAction("warp", (p, screen, element, arg) -> p.performCommand("warp " + arg));
+// config: actions: ["custom:warp:spawn"]
+```
+
+`supports(player)` says whether the player sees the shader version; others (Bedrock, old clients, pack
+declined) get the chest-menu fallback with the same actions. `shaderGui()` throws
+`UnsupportedOperationException` on CustomiZer versions without ShaderGUI.
+
 ### Events
 
 ```java
@@ -251,6 +267,7 @@ All classes are in `fr.elias.customiZer.api`.
 | Functional items (`/zitems`) | `getFunctionalItems`, `buildFunctionalItem` |
 | Glyphs | `getGlyph`, `getGlyphChar`, `getAllGlyphs`, `searchGlyphs`, `getPackGlyphs` |
 | Progression | `getMasteryXP`, `setMasteryXP`, `getMasteryLevel`, `getPrestigeLevel`, `getMissionProgress`, `isMissionCompleted` |
+| ShaderGUI | `shaderGui()` → `ShaderGui`: `open`, `close`, `openScreen`, `screens`, `huds`, `showHud`, `hideHud`, `isHudVisible`, `setValue`, `clearValue`, `notify`, `registerAction`, `unregisterAction`, `supports` |
 | Block rewards | `getRewardData`, `getAllRewardData` |
 
 ### Data types
@@ -273,6 +290,14 @@ All classes are in `fr.elias.customiZer.api`.
 | `CustomItemUseEvent` | yes | A player uses a custom item |
 | `CustomBlockRewardEvent` | yes | A player gets rewards from mining; XP, money and points can be changed |
 | `PackItemGiveEvent` | yes | A pack item is about to be given; the `ItemStack` can be replaced |
+
+### ShaderGUI events (`fr.elias.customiZer.api.shadergui`)
+
+| Event | Cancellable | Fired when |
+|---|---|---|
+| `ShaderGuiOpenEvent` | yes | A screen is about to open; says whether the chest fallback is used |
+| `ShaderGuiClickEvent` | yes | A player clicks an element, before its actions run |
+| `ShaderGuiCloseEvent` | no | A screen closed, with the reason |
 
 ---
 
