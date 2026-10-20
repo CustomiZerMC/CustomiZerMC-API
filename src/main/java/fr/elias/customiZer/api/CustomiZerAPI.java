@@ -105,6 +105,9 @@ public abstract class CustomiZerAPI {
     /** Loaded custom armor IDs, including definitions from packs/<pack>/armors.yml. */
     @NotNull public Set<String> getArmorKeys() { throw unsupported(); }
 
+    /** ShaderGUI screens and HUDs. */
+    @NotNull public fr.elias.customiZer.api.shadergui.ShaderGui shaderGui() { throw unsupported(); }
+
     /** Build through the armor handler (PAPER heads, CORE_SHADER and DISPLAY_3D included). */
     @Nullable public ItemStack buildArmorItem(@NotNull String armorId) { throw unsupported(); }
 
