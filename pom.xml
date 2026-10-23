@@ -6,7 +6,7 @@
 
     <groupId>fr.elias</groupId>
     <artifactId>customizer-api</artifactId>
-    <version>BETA-2.2</version>
+    <version>BETA-2.3</version>
     <packaging>jar</packaging>
     <name>CustomiZer-API</name>
 
