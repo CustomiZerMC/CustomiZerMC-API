@@ -1,5 +1,9 @@
 # CustomiZer API
 
+## Native custom entities
+
+Use `CustomiZerAPI.get().getEntityManager()` on the Paper server thread to spawn a configured entity, resolve a loaded instance by UUID, and control its animation, target, health, model or visibility. Register Bukkit listeners for lifecycle and animation notifications. [Entity configuration and Java API examples](https://github.com/CustomiZerMC/CustomiZerMC-Plugin/blob/main/docs/entity-engine.md)
+
 > [!NOTE]
 > The [CustomiZerMC-API](https://github.com/CustomiZerMC/CustomiZerMC-API) repository is a **read-only mirror**. It's synced automatically from `customizer-api/` in [CustomiZerMC-Plugin](https://github.com/CustomiZerMC/CustomiZerMC-Plugin), so make API changes there; direct edits here are overwritten.
 

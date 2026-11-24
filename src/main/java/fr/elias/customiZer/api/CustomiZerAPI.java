@@ -70,6 +70,11 @@ public abstract class CustomiZerAPI {
     @Nullable
     public static CustomiZerAPI getOrNull() { return instance; }
 
+    /** Access to native custom entities on the server thread. */
+    public fr.elias.customiZer.api.entity.EntityManager getEntityManager() {
+        throw new UnsupportedOperationException("Entity Engine unavailable");
+    }
+
     /**
      * Returns the API instance.
      *
